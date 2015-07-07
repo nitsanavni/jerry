@@ -5,6 +5,8 @@ package me.everything.jerry.utils;
  */
 public class StringUtils {
 
+    public static final String EMPTY_STRING = "";
+
     public static boolean isNullOrEmpty(String string) {
         if (null == string) {
             return true;
