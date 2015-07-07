@@ -1,4 +1,4 @@
-package me.eveything.jerry.ui;
+package me.everything.jerry.ui;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
