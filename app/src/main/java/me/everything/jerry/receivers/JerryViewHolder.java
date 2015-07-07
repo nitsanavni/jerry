@@ -1,7 +1,9 @@
 package me.everything.jerry.receivers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -12,12 +14,14 @@ import android.view.WindowManager;
 import java.lang.ref.WeakReference;
 
 import me.everything.jerry.R;
+import me.everything.jerry.ui.ContactsActivity;
 
 /**
  * Created by nitsan on 7/7/15.
  */
 public class JerryViewHolder {
 
+    private static final String TAG = JerryViewHolder.class.getSimpleName();
     private WeakReference<View> mViewRef;
 
     private static JerryViewHolder sInstance;
@@ -32,7 +36,8 @@ public class JerryViewHolder {
         return sInstance;
     }
 
-    public void addView(Context context, String number) {
+    public void addView(final Context context, String number) {
+        Log.d(TAG, "addView; number: " + number);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
@@ -66,11 +71,20 @@ public class JerryViewHolder {
                 return false;
             }
         });
+        view.findViewById(R.id.jerry_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ContactsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+            }
+        });
         mViewRef = new WeakReference<>(view);
         wm.addView(view, params);
     }
 
     public void removeView(Context context) {
+        Log.d(TAG, "removeView");
         if (null == mViewRef) {
             return;
         }
