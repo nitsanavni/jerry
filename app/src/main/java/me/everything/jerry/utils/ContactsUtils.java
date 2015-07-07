@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -216,5 +217,14 @@ public class ContactsUtils {
             dest.writeStringArray(new String[]{id, name, phoneNumber});
         }
 
+        private static final int NO_COLOR = 0;
+        private int color = NO_COLOR;
+
+        public int getColor(Random random) {
+            if (color != NO_COLOR)
+                return color;
+            color = random.nextInt(0xFFFFFF) + 0xFF000000;
+            return color;
+        }
     }
 }

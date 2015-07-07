@@ -3,7 +3,9 @@ package me.everything.jerry.ui.activities;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,12 +16,17 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Random;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.everything.jerry.R;
 import me.everything.jerry.ui.dialogs.AgendaEditorDialog;
 import me.everything.jerry.utils.ContactsUtils;
+import me.everything.jerry.utils.InitialsFinder;
 
 
 public class ContactsActivity extends Activity {
@@ -47,15 +54,22 @@ public class ContactsActivity extends Activity {
 
     private static class Holder {
         TextView name;
+        CircleImageView image;
     }
 
     private static class Adapter extends BaseAdapter {
 
         private List<ContactsUtils.Contact> mContacts;
         private final WeakReference<Context> mContextRef;
+        private Random mRandom = new Random();
+        private int mImageSize;
+        private int mInitialsTextSize;
 
         public Adapter(Context context) {
             mContextRef = new WeakReference<>(context);
+            Resources resources = context.getResources();
+            mImageSize = resources.getDimensionPixelSize(R.dimen.contact_image_size);
+            mInitialsTextSize = resources.getDimensionPixelSize(R.dimen.initials_text_size);
         }
 
         @Override
@@ -84,26 +98,42 @@ public class ContactsActivity extends Activity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             Holder holder;
+            Context context = mContextRef.get();
+            if (context == null) {
+                return null;
+            }
+            ContactsUtils.Contact contact = (ContactsUtils.Contact) getItem(position);
+            String name = contact.getName();
+            Drawable initialsDrawable;
             if (convertView == null) {
-                Context context = mContextRef.get();
-                if (context == null) {
-                    return null;
-                }
                 convertView = LayoutInflater.from(context).inflate(R.layout.contact_layout, null);
                 holder = new Holder();
                 holder.name = (TextView) convertView.findViewById(R.id.name);
+                holder.image = (CircleImageView) convertView.findViewById(R.id.image);
                 convertView.setTag(holder);
             } else {
                 holder = (Holder) convertView.getTag();
             }
-            ContactsUtils.Contact contact = (ContactsUtils.Contact) getItem(position);
-            String name = contact.getName();
             holder.name.setText(name);
-            if (name.contains("שי") || name.contains("ניצן")) {
-                holder.name.setBackgroundColor(Color.RED);
-            } else {
-                holder.name.setBackgroundColor(Color.BLACK);
-            }
+
+            // Create initials place holder
+
+            // Get contact image URI
+            Uri uri = ContactsUtils.getPhotoUriFromID(context, contact.getId());
+
+            initialsDrawable = InitialsFinder.getInitialsDrawable(name,
+                    contact.getColor(mRandom),
+                    mImageSize,
+                    mImageSize,
+                    mInitialsTextSize);
+
+            // Fetch
+            Picasso.with(context)
+                    .load(uri)
+                    .placeholder(initialsDrawable)
+                    .error(initialsDrawable)
+                    .into(holder.image);
+
             return convertView;
         }
 

@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@android:color/black"
-    android:descendantFocusability="blocksDescendants"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@null"
+    android:descendantFocusability="blocksDescendants">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image"
+        android:layout_width="@dimen/contact_image_size"
+        android:layout_height="@dimen/contact_image_size"
+        android:layout_centerVertical="true"
+        android:layout_margin="@dimen/contact_image_margin" />
 
     <TextView
         android:id="@+id/name"
-        android:textColor="@android:color/white"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/image"
+        android:gravity="left|center_vertical"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
 
 </RelativeLayout>
