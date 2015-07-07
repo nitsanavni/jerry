@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Jerry</string>
+    <string name="full_app_name">Jerry, I wanted to talk to you about something...</string>
+    <string name="full_full_app_name">Jerry, it\'s good that you called - I wanted to talk to you about something...</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+
 </resources>

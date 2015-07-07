@@ -1,9 +1,11 @@
-package me.eveything.jerry;
+package me.eveything.jerry.ui;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import me.eveything.jerry.R;
 
 
 public class ContactsActivity extends ActionBarActivity {
