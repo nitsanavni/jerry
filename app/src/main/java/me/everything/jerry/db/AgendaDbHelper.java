@@ -37,7 +37,8 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
             AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA + TEXT_TYPE + COMMA_SEP +
             AgendaContract.AgendaEntry.COLUMN_NAME_IS_CHECKED + INT_TYPE + COMMA_SEP +
             AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + TEXT_TYPE + COMMA_SEP +
-            AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE +
+            AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE + COMMA_SEP +
+            AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN + INT_TYPE +
             " )";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -97,4 +98,14 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    public void incrementSeen(String number) {
+        if (null == number) {
+            return;
+        }
+        getWritableDatabase().execSQL("UPDATE " +
+                AgendaContract.AgendaEntry.TABLE_NAME + " SET " +
+                AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN + " = " +
+                AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN + " + 1 WHERE " +
+                AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + " = " + number + ";");
+    }
 }
