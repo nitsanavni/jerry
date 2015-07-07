@@ -50,7 +50,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             AgendaDbHelper dbHelper = AgendaDbHelper.getInstance(context);
             dbHelper.incrementSeen(number);
             Agenda agenda = dbHelper.getAgenda(number);
-            if (agenda == null) {
+            if (agenda == null || StringUtils.isNullOrEmpty(agenda.getAgenda())) {
                 // no agenda for this caller
                 return;
             }

@@ -8,6 +8,7 @@ import android.util.Log;
 import me.everything.jerry.db.Agenda;
 import me.everything.jerry.db.AgendaDbHelper;
 import me.everything.jerry.utils.PhoneNumberUtils;
+import me.everything.jerry.utils.StringUtils;
 
 /**
  * Created by nitsan on 7/7/15.
@@ -28,11 +29,16 @@ public class OutgoingCallReceiver extends BroadcastReceiver {
             return;
         }
         number = PhoneNumberUtils.toE164(context, number);
-        Agenda agenda = AgendaDbHelper.getInstance(context).getAgenda(number);
-        if (agenda == null) {
+        if (number == null) {
+            return;
+        }
+        AgendaDbHelper dbHelper = AgendaDbHelper.getInstance(context);
+        dbHelper.incrementSeen(number);
+        Agenda agenda = dbHelper.getAgenda(number);
+        if (agenda == null || StringUtils.isNullOrEmpty(agenda.getAgenda())) {
             return;
         }
         Log.d(TAG, "agenda " + agenda.getAgenda());
-        JerryViewHolder.getInstance().addNonClickableView(context, agenda);
+        JerryViewHolder.getInstance().addClickableView(context, agenda);
     }
 }

@@ -60,13 +60,53 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
     }
 
     public void addAgendaItem(ContactsUtils.Contact contact, String text) {
-        Log.d(TAG, "addAgendaItem, contact " + contact.getName() + ", text " + text);
+        Log.d(TAG, "addAgendaItem, contact " + contact.getName() + ", text " + text + ", number " + contact.getPhoneNumber());
         String name = contact.getName();
         ContentValues values = new ContentValues();
         values.put(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA, text);
         values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME, name);
         values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER, contact.getPhoneNumber());
-        getWritableDatabase().insert(AgendaContract.AgendaEntry.TABLE_NAME, null, values);
+        if (exists(contact.getPhoneNumber())) {
+            getWritableDatabase().update(
+                    AgendaContract.AgendaEntry.TABLE_NAME,
+                    values,
+                    AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + "=?",
+                    new String[]{contact.getPhoneNumber()});
+        } else {
+            getWritableDatabase().insert(
+                    AgendaContract.AgendaEntry.TABLE_NAME,
+                    null,
+                    values);
+        }
+    }
+
+    // hack! should be done as sibgle pass on db
+    private boolean exists(String number) {
+        Log.d(TAG, "exists");
+        Cursor cursor = null;
+        try {
+            String selection = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + "=?";
+            String[] selectionArgs = new String[]{number};
+            cursor = getReadableDatabase().query(
+                    AgendaContract.AgendaEntry.TABLE_NAME,
+                    null,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    null);
+            if (cursor == null || !cursor.moveToFirst()) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return false;
     }
 
     public Agenda getAgenda(String number) {
@@ -83,11 +123,15 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
                     null,
                     null,
                     null);
-            if (cursor != null && cursor.moveToFirst()) {
-                return new Agenda(cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME)),
-                        number,
-                        cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA)));
+            if (cursor == null || !cursor.moveToFirst()) {
+                return null;
             }
+
+            String name = cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME));
+            String agendaText = cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA));
+            Agenda agenda = new Agenda(name, number, agendaText);
+            Log.d(TAG, "agenda: " + agenda.getAgenda() + ", name: " + agenda.getContactName());
+            return agenda;
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         } finally {
@@ -102,10 +146,20 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
         if (null == number) {
             return;
         }
-        getWritableDatabase().execSQL("UPDATE " +
-                AgendaContract.AgendaEntry.TABLE_NAME + " SET " +
-                AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN + " = " +
-                AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN + " + 1 WHERE " +
-                AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + " = " + number + ";");
+        String table = AgendaContract.AgendaEntry.TABLE_NAME;
+        String seen = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN;
+        String numberCol = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER;
+        String name = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME;
+        // the intention is to increment
+        getWritableDatabase().execSQL(
+                "INSERT OR REPLACE INTO " + table + " (" +
+                        numberCol + "," +
+                        seen + "," +
+                        name + ") " +
+                        "VALUES(" +
+                        "'" + number + "'," +
+                        "COALESCE((SELECT " + seen + " FROM " + table + " WHERE " + numberCol + "='" + number + "') + 1, 0 ), " +
+                        "(SELECT " + name + " FROM " + table + " WHERE " + numberCol + "='" + number + "')" +
+                        ");");
     }
 }

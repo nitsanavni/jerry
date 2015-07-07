@@ -3,6 +3,9 @@ package me.everything.jerry.receivers;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -40,7 +43,7 @@ public class JerryViewHolder {
 
     private WindowManager.LayoutParams getParams() {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
@@ -48,13 +51,13 @@ public class JerryViewHolder {
                 PixelFormat.TRANSLUCENT);
 
         params.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        params.width = WindowManager.LayoutParams.MATCH_PARENT;
+        params.width = WindowManager.LayoutParams.WRAP_CONTENT;
         params.format = PixelFormat.TRANSLUCENT;
-        params.gravity = Gravity.TOP;
+        params.gravity = Gravity.CENTER_VERTICAL | Gravity.RIGHT;
         return params;
     }
 
-    public void addClickableView(final Context context) {
+    public void addClickableView(final Context context, final Agenda agenda) {
         Log.d(TAG, "addClickableView");
         removeView(context);
         View view = LayoutInflater.from(context).inflate(R.layout.test_call_overlay_layout, null);
@@ -72,12 +75,17 @@ public class JerryViewHolder {
                 return false;
             }
         });
-        view.findViewById(R.id.jerry_button).setOnClickListener(new View.OnClickListener() {
+        final TextView textView = (TextView) view.findViewById(R.id.jerry_button);
+        view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ShowAgendaDuringCallActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
+                if (agenda != null) {
+                    SpannableString ss = new SpannableString(agenda.getContactName() + "\n");
+                    textView.setText(ss);
+                    ss = new SpannableString(agenda.getAgenda());
+                    ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    textView.append(ss);
+                }
             }
         });
         mViewRef = new WeakReference<>(view);
@@ -137,7 +145,7 @@ public class JerryViewHolder {
         if (view == null) {
             return;
         }
-        addClickableView(view.getContext());
+        addClickableView(view.getContext(), null);
     }
 
 }

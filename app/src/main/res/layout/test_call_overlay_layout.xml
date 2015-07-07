@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:layout_gravity="top">
+    android:layout_alignParentRight="true"
+    android:layout_centerVertical="true"
+    android:layout_gravity="center_vertical|right"
+    android:animateLayoutChanges="true">
 
-    <Button
+    <TextView
         android:id="@+id/jerry_button"
+        style="@style/reminder_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/reminder_background_height"
         android:layout_gravity="center_horizontal"
-        android:text="hello Jerry" />
+        android:layout_marginLeft="@dimen/reminder_text_margin_left"
+        android:layout_toRightOf="@+id/icon"
+        android:background="@drawable/remider_text_background"
+        android:gravity="center_vertical"
+        android:paddingLeft="@dimen/reminder_text_padding_left"
+        android:paddingRight="@dimen/reminder_background_padding"
+        android:text="" />
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/reminder_background_height"
+        android:layout_height="@dimen/reminder_background_height"
+        android:background="@drawable/reminder_icon_background"
+        android:padding="@dimen/reminder_background_padding"
+        android:src="@drawable/reminder_icon" />
+
+</RelativeLayout>

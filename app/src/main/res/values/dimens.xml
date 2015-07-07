@@ -5,4 +5,11 @@
     <dimen name="contact_image_size">60dp</dimen>
     <dimen name="contact_image_margin">16dp</dimen>
     <dimen name="initials_text_size">30sp</dimen>
+    <dimen name="reminder_icon_to_text_distance">10dp</dimen>
+    <dimen name="reminder_background_radius">32dp</dimen>
+    <dimen name="reminder_background_padding">8dp</dimen>
+    <dimen name="reminder_background_height">64dp</dimen>
+    <dimen name="reminder_text_padding_left">32dp</dimen>
+    <dimen name="reminder_icon_size">48dp</dimen>
+    <dimen name="reminder_text_margin_left">-32dp</dimen>
 </resources>
