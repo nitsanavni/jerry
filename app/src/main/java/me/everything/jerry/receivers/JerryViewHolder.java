@@ -2,6 +2,7 @@ package me.everything.jerry.receivers;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Build;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.TextAppearanceSpan;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -60,7 +62,7 @@ public class JerryViewHolder {
     public void addClickableView(final Context context, Agenda agenda) {
         Log.d(TAG, "addClickableView");
         removeView(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.call_overlay_layout, null);
+        final View view = LayoutInflater.from(context).inflate(R.layout.call_overlay_layout, null);
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -81,20 +83,35 @@ public class JerryViewHolder {
         } else {
             mAgenda = agenda;
         }
-        final Agenda finalAgenda = agenda;
-        view.setOnClickListener(new View.OnClickListener() {
+        SpannableString ss = new SpannableString(agenda.getContactName() + "\n");
+        textView.setText(ss);
+        ss = new SpannableString(agenda.getAgenda());
+        ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.append(ss);
+        final View icon = view.findViewById(R.id.icon);
+        textView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick");
-                if (finalAgenda != null) {
-                    SpannableString ss = new SpannableString(finalAgenda.getContactName() + "\n");
-                    textView.setText(ss);
-                    ss = new SpannableString(finalAgenda.getAgenda());
-                    ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    textView.append(ss);
+            public void onGlobalLayout() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                } else {
+                    textView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
+                int translate = textView.getWidth() - icon.getWidth() / 2;
+                icon.setTranslationX(translate);
+                textView.setTranslationX(translate);
+                view.setVisibility(View.VISIBLE);
             }
         });
+        icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick icon");
+                icon.animate().translationX(0).start();
+                textView.animate().translationX(0).start();
+            }
+        });
+
         mClickableViewRef = new WeakReference<>(view);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams params = getParams();

@@ -5,7 +5,8 @@
     android:layout_alignParentRight="true"
     android:layout_centerVertical="true"
     android:layout_gravity="center_vertical|right"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:visibility="invisible">
 
     <TextView
         android:id="@+id/jerry_button"
