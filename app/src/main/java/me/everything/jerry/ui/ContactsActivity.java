@@ -1,12 +1,14 @@
 package me.everything.jerry.ui;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -15,6 +17,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import me.everything.jerry.R;
+import me.everything.jerry.ui.dialogs.AgendaEditorDialog;
 import me.everything.jerry.utils.ContactsUtils;
 
 
@@ -31,6 +34,14 @@ public class ContactsActivity extends Activity {
         mAdapter = new Adapter(this);
         mList.setAdapter(mAdapter);
         new GetContactsTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null);
+        mList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ContactsUtils.Contact contact = (ContactsUtils.Contact) mAdapter.getItem(position);
+                DialogFragment fragment = AgendaEditorDialog.newInstance(contact);
+                fragment.show(getFragmentManager(), null);
+            }
+        });
     }
 
     private static class Holder {
@@ -43,7 +54,7 @@ public class ContactsActivity extends Activity {
         private final WeakReference<Context> mContextRef;
 
         public Adapter(Context context) {
-            mContextRef = new WeakReference<Context>(context);
+            mContextRef = new WeakReference<>(context);
         }
 
         @Override

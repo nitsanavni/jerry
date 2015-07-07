@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -22,6 +24,7 @@ import java.util.List;
 public class ContactsUtils {
 
     private static final String TAG = ContactsUtils.class.getSimpleName();
+    public static final String CONTACT_KEY = "contact";
 
     /**
      * @return
@@ -125,7 +128,7 @@ public class ContactsUtils {
         return null;
     }
 
-    public static class Contact {
+    public static class Contact implements Parcelable {
         private String id;
         private String name;
         private String phoneNumber;
@@ -135,6 +138,24 @@ public class ContactsUtils {
             this.name = name;
             this.phoneNumber = phoneNumber;
         }
+
+        public Contact(Parcel in) {
+            String[] data = new String[3];
+            in.readStringArray(data);
+            id = data[0];
+            name = data[1];
+            phoneNumber = data[2];
+        }
+
+        public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+            public Contact createFromParcel(Parcel in) {
+                return new Contact(in);
+            }
+
+            public Contact[] newArray(int size) {
+                return new Contact[size];
+            }
+        };
 
         public String getId() {
             return id;
@@ -146,6 +167,16 @@ public class ContactsUtils {
 
         public String getPhoneNumber() {
             return phoneNumber;
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeStringArray(new String[]{id, name, phoneNumber});
         }
 
     }

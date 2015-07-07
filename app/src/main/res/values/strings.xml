@@ -6,6 +6,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="hello_jerry">hello Jerry!</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Camcel</string>
 
 
 </resources>

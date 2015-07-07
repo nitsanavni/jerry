@@ -41,19 +41,16 @@ public class JerryViewHolder {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
-
                 WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT |
-                        WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                100,
+                WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSPARENT);
+                PixelFormat.TRANSLUCENT);
 
-        params.height = WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = WindowManager.LayoutParams.WRAP_CONTENT;
         params.width = WindowManager.LayoutParams.MATCH_PARENT;
         params.format = PixelFormat.TRANSLUCENT;
-
         params.gravity = Gravity.TOP;
 
         View view = LayoutInflater.from(context).inflate(R.layout.test_call_overlay_layout, null);
