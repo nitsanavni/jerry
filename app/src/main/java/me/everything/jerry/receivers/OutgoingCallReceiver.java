@@ -5,8 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import me.everything.jerry.db.Agenda;
 import me.everything.jerry.db.AgendaDbHelper;
-import me.everything.jerry.utils.ContactsUtils;
+import me.everything.jerry.utils.PhoneNumberUtils;
 
 /**
  * Created by nitsan on 7/7/15.
@@ -17,21 +18,21 @@ public class OutgoingCallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive()");
-        String number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+        String number = getResultData();
+        if (number == null) {
+            // No reformatted number, use the original
+            number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+        }
         Log.d(TAG, "number " + number);
         if (number == null) {
             return;
         }
-        ContactsUtils.Contact contact = ContactsUtils.getContactFromNumber(context, number);
-        if (contact == null) {
-            return;
-        }
-        Log.d(TAG, "contact " + contact.getName());
-        String agenda = AgendaDbHelper.getInstance(context).getAgenda(contact.getName());
+        number = PhoneNumberUtils.toE164(context, number);
+        Agenda agenda = AgendaDbHelper.getInstance(context).getAgenda(number);
         if (agenda == null) {
             return;
         }
-        Log.d(TAG, "agenda " + agenda);
-        JerryViewHolder.getInstance().addNonClickableView(context, number, contact, agenda);
+        Log.d(TAG, "agenda " + agenda.getAgenda());
+        JerryViewHolder.getInstance().addNonClickableView(context, agenda);
     }
 }

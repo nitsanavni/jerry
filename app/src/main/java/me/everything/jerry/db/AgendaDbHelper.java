@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.nfc.Tag;
-import android.text.Editable;
 import android.util.Log;
 
 import me.everything.jerry.utils.ContactsUtils;
@@ -38,6 +36,7 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
             AgendaContract.AgendaEntry._ID + " INTEGER PRIMARY KEY," +
             AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA + TEXT_TYPE + COMMA_SEP +
             AgendaContract.AgendaEntry.COLUMN_NAME_IS_CHECKED + INT_TYPE + COMMA_SEP +
+            AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + TEXT_TYPE + COMMA_SEP +
             AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME + TEXT_TYPE +
             " )";
 
@@ -59,23 +58,22 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-
     public void addAgendaItem(ContactsUtils.Contact contact, String text) {
         Log.d(TAG, "addAgendaItem, contact " + contact.getName() + ", text " + text);
         String name = contact.getName();
         ContentValues values = new ContentValues();
         values.put(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA, text);
         values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME, name);
+        values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER, contact.getPhoneNumber());
         getWritableDatabase().insert(AgendaContract.AgendaEntry.TABLE_NAME, null, values);
     }
 
-    public String getAgenda(String name) {
+    public Agenda getAgenda(String number) {
         Log.d(TAG, "getAgenda");
         Cursor cursor = null;
-        String agenda = null;
         try {
-            String selection = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME + "=?";
-            String[] selectionArgs = new String[]{name};
+            String selection = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + "=?";
+            String[] selectionArgs = new String[]{number};
             cursor = getReadableDatabase().query(
                     AgendaContract.AgendaEntry.TABLE_NAME,
                     null,
@@ -85,7 +83,9 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
                     null,
                     null);
             if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA));
+                return new Agenda(cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME)),
+                        number,
+                        cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA)));
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -94,7 +94,7 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
                 cursor.close();
             }
         }
-        return agenda;
+        return null;
     }
 
 }

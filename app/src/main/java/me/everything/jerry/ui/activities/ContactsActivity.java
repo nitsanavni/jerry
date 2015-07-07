@@ -99,7 +99,7 @@ public class ContactsActivity extends Activity {
             ContactsUtils.Contact contact = (ContactsUtils.Contact) getItem(position);
             String name = contact.getName();
             holder.name.setText(name);
-            if (name.contains("שי")) {
+            if (name.contains("שי") || name.contains("ניצן")) {
                 holder.name.setBackgroundColor(Color.RED);
             } else {
                 holder.name.setBackgroundColor(Color.BLACK);

@@ -15,8 +15,8 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 
 import me.everything.jerry.R;
+import me.everything.jerry.db.Agenda;
 import me.everything.jerry.ui.activities.ShowAgendaDuringCallActivity;
-import me.everything.jerry.utils.ContactsUtils;
 
 /**
  * Created by nitsan on 7/7/15.
@@ -41,7 +41,7 @@ public class JerryViewHolder {
     private WindowManager.LayoutParams getParams() {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
-                100,
+                WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
@@ -54,8 +54,8 @@ public class JerryViewHolder {
         return params;
     }
 
-    public void addClickableView(final Context context, String number) {
-        Log.d(TAG, "addClickableView; number: " + number);
+    public void addClickableView(final Context context) {
+        Log.d(TAG, "addClickableView");
         removeView(context);
         View view = LayoutInflater.from(context).inflate(R.layout.test_call_overlay_layout, null);
         view.setOnTouchListener(new View.OnTouchListener() {
@@ -77,7 +77,6 @@ public class JerryViewHolder {
             public void onClick(View v) {
                 Intent intent = new Intent(context, ShowAgendaDuringCallActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
                 context.startActivity(intent);
             }
         });
@@ -101,10 +100,11 @@ public class JerryViewHolder {
             return;
         }
         wm.removeView(view);
+        mViewRef = null;
     }
 
-    public void addNonClickableView(final Context context, String number, ContactsUtils.Contact contact, String agenda) {
-        Log.d(TAG, "addNonClickableView; number: " + number);
+    public void addNonClickableView(final Context context, Agenda agenda) {
+        Log.d(TAG, "addNonClickableView; number: " + agenda.getContactNumber());
         removeView(context);
         View view = LayoutInflater.from(context).inflate(R.layout.agenda_overlay_layout, null);
         view.setOnTouchListener(new View.OnTouchListener() {
@@ -122,11 +122,22 @@ public class JerryViewHolder {
             }
         });
         TextView agendaView = (TextView) view.findViewById(R.id.agenda_text);
-        agendaView.setText(contact.getName() + "\n" + agenda);
+        agendaView.setText(agenda.getContactName() + "\n" + agenda.getAgenda());
         mViewRef = new WeakReference<>(view);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams params = getParams();
         wm.addView(view, params);
+    }
+
+    public void offhook() {
+        if (mViewRef == null) {
+            return;
+        }
+        View view = mViewRef.get();
+        if (view == null) {
+            return;
+        }
+        addClickableView(view.getContext());
     }
 
 }

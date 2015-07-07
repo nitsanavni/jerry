@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import me.everything.jerry.db.Agenda;
 import me.everything.jerry.db.AgendaDbHelper;
 import me.everything.jerry.utils.ContactsUtils;
+import me.everything.jerry.utils.PhoneNumberUtils;
 import me.everything.jerry.utils.StringUtils;
 
 /**
@@ -36,25 +38,25 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         }
 
         if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
-            Log.d(TAG, "ringing");
+            Log.d(TAG, "incoming call ringing");
             String number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
             Log.d(TAG, "number " + number);
-            ContactsUtils.Contact contact = ContactsUtils.getContactFromNumber(context, number);
-            if (contact == null) {
+            if (number == null) {
                 return;
             }
-            String agenda = AgendaDbHelper.getInstance(context).getAgenda(contact.getName());
+            number = PhoneNumberUtils.toE164(context, number);
+            Agenda agenda = AgendaDbHelper.getInstance(context).getAgenda(number);
             if (agenda == null) {
                 // no agenda for this caller
                 return;
             }
-            JerryViewHolder.getInstance().addNonClickableView(context, number, contact, agenda);
+            JerryViewHolder.getInstance().addNonClickableView(context, agenda);
             return;
         }
 
         if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-            Log.d(TAG, "off hook");
-            return;
+            Log.d(TAG, "off hook (either outgoing call or answered incoming call)");
+            JerryViewHolder.getInstance().offhook();
         }
 
     }
