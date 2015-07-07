@@ -1,7 +1,6 @@
 package me.everything.jerry.receivers;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -19,7 +18,6 @@ import java.lang.ref.WeakReference;
 
 import me.everything.jerry.R;
 import me.everything.jerry.db.Agenda;
-import me.everything.jerry.ui.activities.ShowAgendaDuringCallActivity;
 
 /**
  * Created by nitsan on 7/7/15.
@@ -60,7 +58,7 @@ public class JerryViewHolder {
     public void addClickableView(final Context context, final Agenda agenda) {
         Log.d(TAG, "addClickableView");
         removeView(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.test_call_overlay_layout, null);
+        View view = LayoutInflater.from(context).inflate(R.layout.call_overlay_layout, null);
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
