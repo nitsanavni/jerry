@@ -146,6 +146,11 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    /**
+     * we keep a histogram of phone usage per number - could be used to sort the contacts list
+     *
+     * @param number
+     */
     public void incrementSeen(String number) {
         Log.d(TAG, "incrementSeen");
         if (null == number) {

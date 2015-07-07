@@ -25,9 +25,11 @@ import me.everything.jerry.db.Agenda;
 public class JerryViewHolder {
 
     private static final String TAG = JerryViewHolder.class.getSimpleName();
-    private WeakReference<View> mViewRef;
+    private WeakReference<View> mNonClickableViewRef;
+    private WeakReference<View> mClickableViewRef;
 
     private static JerryViewHolder sInstance;
+    private Agenda mAgenda;
 
     private JerryViewHolder() {
     }
@@ -55,7 +57,7 @@ public class JerryViewHolder {
         return params;
     }
 
-    public void addClickableView(final Context context, final Agenda agenda) {
+    public void addClickableView(final Context context, Agenda agenda) {
         Log.d(TAG, "addClickableView");
         removeView(context);
         View view = LayoutInflater.from(context).inflate(R.layout.call_overlay_layout, null);
@@ -74,19 +76,26 @@ public class JerryViewHolder {
             }
         });
         final TextView textView = (TextView) view.findViewById(R.id.jerry_button);
+        if (agenda == null) {
+            agenda = mAgenda;
+        } else {
+            mAgenda = agenda;
+        }
+        final Agenda finalAgenda = agenda;
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (agenda != null) {
-                    SpannableString ss = new SpannableString(agenda.getContactName() + "\n");
+                Log.d(TAG, "onClick");
+                if (finalAgenda != null) {
+                    SpannableString ss = new SpannableString(finalAgenda.getContactName() + "\n");
                     textView.setText(ss);
-                    ss = new SpannableString(agenda.getAgenda());
+                    ss = new SpannableString(finalAgenda.getAgenda());
                     ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     textView.append(ss);
                 }
             }
         });
-        mViewRef = new WeakReference<>(view);
+        mClickableViewRef = new WeakReference<>(view);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams params = getParams();
         wm.addView(view, params);
@@ -94,23 +103,20 @@ public class JerryViewHolder {
 
     public void removeView(Context context) {
         Log.d(TAG, "removeView");
-        if (null == mViewRef) {
-            return;
-        }
-        View view = mViewRef.get();
-        if (null == view) {
-            return;
-        }
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (null == wm) {
-            return;
+        if (null != mClickableViewRef && mClickableViewRef.get() != null) {
+            wm.removeView(mClickableViewRef.get());
+            mClickableViewRef = null;
         }
-        wm.removeView(view);
-        mViewRef = null;
+        if (null != mNonClickableViewRef && mNonClickableViewRef.get() != null) {
+            wm.removeView(mNonClickableViewRef.get());
+            mNonClickableViewRef = null;
+        }
     }
 
     public void addNonClickableView(final Context context, Agenda agenda) {
         Log.d(TAG, "addNonClickableView; number: " + agenda.getContactNumber());
+        mAgenda = agenda;
         removeView(context);
         View view = LayoutInflater.from(context).inflate(R.layout.agenda_overlay_layout, null);
         view.setOnTouchListener(new View.OnTouchListener() {
@@ -129,17 +135,20 @@ public class JerryViewHolder {
         });
         TextView agendaView = (TextView) view.findViewById(R.id.agenda_text);
         agendaView.setText(agenda.getContactName() + "\n" + agenda.getAgenda());
-        mViewRef = new WeakReference<>(view);
+        mNonClickableViewRef = new WeakReference<>(view);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams params = getParams();
         wm.addView(view, params);
     }
 
     public void offhook() {
-        if (mViewRef == null) {
+        if (mClickableViewRef != null && mClickableViewRef.get() != null) {
             return;
         }
-        View view = mViewRef.get();
+        if (mNonClickableViewRef == null) {
+            return;
+        }
+        View view = mNonClickableViewRef.get();
         if (view == null) {
             return;
         }
