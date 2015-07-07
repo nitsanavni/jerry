@@ -1,14 +1,22 @@
 package me.everything.jerry.db;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.nfc.Tag;
+import android.text.Editable;
+import android.util.Log;
+
+import me.everything.jerry.utils.ContactsUtils;
 
 /**
  * Created by nitsan on 7/7/15.
  */
 public class AgendaDbHelper extends SQLiteOpenHelper {
 
+    private static final String TAG = AgendaDbHelper.class.getSimpleName();
     private static AgendaDbHelper sInstance;
 
     public static AgendaDbHelper getInstance(Context context) {
@@ -52,5 +60,41 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
     }
 
 
+    public void addAgendaItem(ContactsUtils.Contact contact, String text) {
+        Log.d(TAG, "addAgendaItem, contact " + contact.getName() + ", text " + text);
+        String name = contact.getName();
+        ContentValues values = new ContentValues();
+        values.put(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA, text);
+        values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME, name);
+        getWritableDatabase().insert(AgendaContract.AgendaEntry.TABLE_NAME, null, values);
+    }
+
+    public String getAgenda(String name) {
+        Log.d(TAG, "getAgenda");
+        Cursor cursor = null;
+        String agenda = null;
+        try {
+            String selection = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME + "=?";
+            String[] selectionArgs = new String[]{name};
+            cursor = getReadableDatabase().query(
+                    AgendaContract.AgendaEntry.TABLE_NAME,
+                    null,
+                    selection,
+                    selectionArgs,
+                    null,
+                    null,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                return cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return agenda;
+    }
 
 }

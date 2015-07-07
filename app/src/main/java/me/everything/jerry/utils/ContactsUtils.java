@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.ContactsContract;
+import android.text.Selection;
 import android.util.Log;
 
 import java.io.IOException;
@@ -123,6 +124,42 @@ public class ContactsUtils {
                 } catch (IOException e) {
                     Log.e(TAG, e.getMessage());
                 }
+            }
+        }
+        return null;
+    }
+
+    public static Contact getContactFromNumber(Context context, String number) {
+        Cursor cursor = null;
+        if (StringUtils.isNullOrEmpty(number)) {
+            return null;
+        }
+        number = PhoneNumberUtils.toE164(context, number);
+        if (StringUtils.isNullOrEmpty(number)) {
+            return null;
+        }
+        try {
+            cursor = context.getContentResolver()
+                    .query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null, null);
+            if (cursor == null || !cursor.moveToFirst()) {
+                Log.w(TAG, "readContacts() no contacts found!");
+                return null;
+            }
+
+            do {
+                String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phoneNumber = PhoneNumberUtils.toE164(context, phoneNumber);
+                if (!StringUtils.isNullOrEmpty(phoneNumber) && phoneNumber.equals(number)) {
+                    String id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
+                    String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                    return new Contact(id, name, phoneNumber);
+                }
+            } while (cursor.moveToNext());
+        } catch (Exception e) {
+            Log.e(TAG, "Failed reading contacts list", e);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
             }
         }
         return null;

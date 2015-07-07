@@ -6,11 +6,13 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
 import me.everything.jerry.R;
+import me.everything.jerry.db.AgendaDbHelper;
 import me.everything.jerry.utils.ContactsUtils;
 
 /**
@@ -40,7 +42,7 @@ public class AgendaEditorDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Context context = getActivity();
+        final Context context = getActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View content = LayoutInflater.from(context).inflate(R.layout.agenda_dialog_content_view, null);
         final EditText field = (EditText) content.findViewById(R.id.agenda_field);
@@ -51,7 +53,8 @@ public class AgendaEditorDialog extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        field.getText();
+                        Editable text = field.getText();
+                        AgendaDbHelper.getInstance(context).addAgendaItem(mContact, text.toString());
                     }
                 });
         return builder.create();

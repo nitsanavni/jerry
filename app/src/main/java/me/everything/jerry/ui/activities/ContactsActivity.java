@@ -1,8 +1,9 @@
-package me.everything.jerry.ui;
+package me.everything.jerry.ui.activities;
 
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -96,7 +97,13 @@ public class ContactsActivity extends Activity {
                 holder = (Holder) convertView.getTag();
             }
             ContactsUtils.Contact contact = (ContactsUtils.Contact) getItem(position);
-            holder.name.setText(contact.getName());
+            String name = contact.getName();
+            holder.name.setText(name);
+            if (name.contains("שי")) {
+                holder.name.setBackgroundColor(Color.RED);
+            } else {
+                holder.name.setBackgroundColor(Color.BLACK);
+            }
             return convertView;
         }
 

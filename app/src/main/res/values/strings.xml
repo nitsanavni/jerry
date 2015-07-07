@@ -8,6 +8,8 @@
     <string name="hello_jerry">hello Jerry!</string>
     <string name="ok">OK</string>
     <string name="cancel">Camcel</string>
+    <string name="title_activity_show_agenda_during_call">ShowAgendaDuringCallActivity</string>
+    <string name="loading">Loading...</string>
 
 
 </resources>
