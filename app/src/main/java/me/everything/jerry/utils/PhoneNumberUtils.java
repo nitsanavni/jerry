@@ -32,7 +32,7 @@ public class PhoneNumberUtils {
         } catch (NumberParseException e) {
             Log.e(TAG, e.getMessage());
         }
-        Log.d(TAG, "toE164: in " + phoneNumber + " out " + ret);
+//        Log.d(TAG, "toE164: in " + phoneNumber + " out " + ret);
         return ret;
     }
 

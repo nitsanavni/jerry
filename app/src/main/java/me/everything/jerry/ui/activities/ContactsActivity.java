@@ -24,6 +24,7 @@ import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.everything.jerry.R;
+import me.everything.jerry.db.AgendaDbHelper;
 import me.everything.jerry.ui.dialogs.AgendaEditorDialog;
 import me.everything.jerry.utils.ContactsUtils;
 import me.everything.jerry.utils.InitialsFinder;
@@ -50,6 +51,7 @@ public class ContactsActivity extends Activity {
                 fragment.show(getFragmentManager(), null);
             }
         });
+        AgendaDbHelper.getInstance(this).printAllDb();
     }
 
     private static class Holder {

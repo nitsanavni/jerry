@@ -65,19 +65,23 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA, text);
         values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME, name);
-        values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER, contact.getPhoneNumber());
         if (exists(contact.getPhoneNumber())) {
-            getWritableDatabase().update(
+            Log.d(TAG, "update");
+            getWritableDatabase().updateWithOnConflict(
                     AgendaContract.AgendaEntry.TABLE_NAME,
                     values,
                     AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + "=?",
-                    new String[]{contact.getPhoneNumber()});
+                    new String[]{contact.getPhoneNumber()},
+                    SQLiteDatabase.CONFLICT_IGNORE);
         } else {
+            Log.d(TAG, "update");
+            values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER, contact.getPhoneNumber());
             getWritableDatabase().insert(
                     AgendaContract.AgendaEntry.TABLE_NAME,
                     null,
                     values);
         }
+        printAllDb();
     }
 
     // hack! should be done as sibgle pass on db
@@ -143,23 +147,65 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
     }
 
     public void incrementSeen(String number) {
+        Log.d(TAG, "incrementSeen");
         if (null == number) {
             return;
         }
+        String id = AgendaContract.AgendaEntry._ID;
         String table = AgendaContract.AgendaEntry.TABLE_NAME;
         String seen = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN;
         String numberCol = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER;
         String name = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME;
+        String agenda = AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA;
         // the intention is to increment
         getWritableDatabase().execSQL(
                 "INSERT OR REPLACE INTO " + table + " (" +
+                        id + "," +
+                        agenda + "," +
                         numberCol + "," +
                         seen + "," +
                         name + ") " +
                         "VALUES(" +
+                        "(SELECT " + id + " FROM " + table + " WHERE " + numberCol + "='" + number + "')," +
+                        "(SELECT " + agenda + " FROM " + table + " WHERE " + numberCol + "='" + number + "')," +
                         "'" + number + "'," +
-                        "COALESCE((SELECT " + seen + " FROM " + table + " WHERE " + numberCol + "='" + number + "') + 1, 0 ), " +
+                        "COALESCE((SELECT " + seen + " FROM " + table + " WHERE " + numberCol + "='" + number + "') + 1, 1 ), " +
                         "(SELECT " + name + " FROM " + table + " WHERE " + numberCol + "='" + number + "')" +
                         ");");
+        printAllDb();
     }
+
+    public void printAllDb() {
+        Cursor cursor = null;
+        try {
+            cursor = getReadableDatabase().query(
+                    AgendaContract.AgendaEntry.TABLE_NAME,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
+            if (cursor == null || !cursor.moveToFirst()) {
+                Log.d(TAG, "db empty");
+                return;
+            }
+
+            do {
+                String name = cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME));
+                String agenda = cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA));
+                String number = cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER));
+                int seen = cursor.getInt(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN));
+                Log.d(TAG, "printall: name: " + name + ", seen " + seen + ", agenda: " + agenda + ", number " + number);
+            } while (cursor.moveToNext());
+
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
 }
