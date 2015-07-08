@@ -11,6 +11,7 @@
     <string name="title_activity_show_agenda_during_call">ShowAgendaDuringCallActivity</string>
     <string name="loading">Loading...</string>
     <string name="agenda_field_hint">Type your note</string>
+    <string name="send_to_jerry">Send to Jerry</string>
 
 
 </resources>
