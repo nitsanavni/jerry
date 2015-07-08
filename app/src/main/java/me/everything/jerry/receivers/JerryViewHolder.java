@@ -98,9 +98,12 @@ public class JerryViewHolder {
                     textView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
                 int translate = textView.getWidth() - icon.getWidth() / 2;
-                icon.setTranslationX(translate);
-                textView.setTranslationX(translate);
+                int width = view.getWidth();
+                icon.setTranslationX(width);
+                textView.setTranslationX(width);
                 view.setVisibility(View.VISIBLE);
+                icon.animate().translationX(translate).start();
+                textView.animate().translationX(translate).start();
             }
         });
         icon.setOnClickListener(new View.OnClickListener() {
