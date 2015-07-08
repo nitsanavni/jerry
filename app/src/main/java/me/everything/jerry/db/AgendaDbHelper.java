@@ -60,6 +60,31 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void addAgendaItem(String contactName, String contactNumber, String text, String subject) {
+        Log.d(TAG, "addAgendaItem, contact " + contactName + ", text " + text + ", number " + contactNumber);
+        ContentValues values = new ContentValues();
+        values.put(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA, text);
+        values.put(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA_SUBJECT, subject);
+        values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME, contactName);
+        if (exists(contactNumber)) {
+            Log.d(TAG, "update");
+            getWritableDatabase().updateWithOnConflict(
+                    AgendaContract.AgendaEntry.TABLE_NAME,
+                    values,
+                    AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER + "=?",
+                    new String[]{contactNumber},
+                    SQLiteDatabase.CONFLICT_IGNORE);
+        } else {
+            Log.d(TAG, "update");
+            values.put(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER, contactNumber);
+            getWritableDatabase().insert(
+                    AgendaContract.AgendaEntry.TABLE_NAME,
+                    null,
+                    values);
+        }
+        printAllDb();
+    }
+
     public void addAgendaItem(ContactsUtils.Contact contact, String text, String subject) {
         Log.d(TAG, "addAgendaItem, contact " + contact.getName() + ", text " + text + ", number " + contact.getPhoneNumber());
         String name = contact.getName();
@@ -220,5 +245,6 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
             }
         }
     }
+
 
 }

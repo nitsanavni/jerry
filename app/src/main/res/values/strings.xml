@@ -14,6 +14,7 @@
     <string name="send_to_jerry">Send to Jerry</string>
     <string name="agenda_title_hint">Reminder Title</string>
     <string name="save">SAVE</string>
+    <string name="clear">CLEAR</string>
 
 
 </resources>

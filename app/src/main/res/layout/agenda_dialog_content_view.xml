@@ -47,4 +47,16 @@
         android:text="@string/save"
         android:textColor="@color/reminder_color" />
 
+    <TextView
+        android:id="@+id/clear"
+        style="@style/dialog_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/agenda_field"
+        android:layout_margin="@dimen/dialog_button_margin"
+        android:layout_toLeftOf="@+id/cancel"
+        android:text="@string/clear"
+        android:visibility="gone" />
+
+
 </RelativeLayout>

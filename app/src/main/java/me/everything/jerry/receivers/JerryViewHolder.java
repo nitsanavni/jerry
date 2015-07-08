@@ -137,6 +137,7 @@ public class JerryViewHolder {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(Agenda.KEY, finalAgenda);
                 context.startActivity(intent);
+                removeView(context);
             }
         });
 
