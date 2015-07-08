@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,8 +144,10 @@ public class ContactsActivity extends Activity {
             Agenda agenda = contact.getAgenda();
             if (agenda != null && !StringUtils.isNullOrEmpty(agenda.getAgenda())) {
                 holder.badge.setVisibility(View.VISIBLE);
-                SpannableString ss = new SpannableString("\n" + agenda.getAgenda());
-                ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                CharSequence ellipsize = TextUtils.ellipsize(agenda.getAgenda(), holder.name.getPaint(), 1700, TextUtils.TruncateAt.END);
+                SpannableString ss = new SpannableString("\n" + ellipsize);
+                TextAppearanceSpan span = new TextAppearanceSpan(context, R.style.remonder_text);
+                ss.setSpan(span, 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.name.append(ss);
             } else {
                 holder.badge.setVisibility(View.GONE);
