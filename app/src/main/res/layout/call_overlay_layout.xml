@@ -26,6 +26,7 @@
         android:id="@+id/icon"
         android:layout_width="@dimen/reminder_background_height"
         android:layout_height="@dimen/reminder_background_height"
+        android:layout_marginLeft="@dimen/reminder_icon_margin_left"
         android:background="@drawable/reminder_icon_background"
         android:padding="@dimen/reminder_background_padding"
         android:src="@drawable/reminder_icon" />
