@@ -152,10 +152,11 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
      * @param number
      */
     public void incrementSeen(String number) {
-        Log.d(TAG, "incrementSeen");
         if (null == number) {
+            Log.d(TAG, "incrementSeen number is null");
             return;
         }
+        Log.d(TAG, "incrementSeen");
         String id = AgendaContract.AgendaEntry._ID;
         String table = AgendaContract.AgendaEntry.TABLE_NAME;
         String seen = AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN;

@@ -69,7 +69,9 @@ public class AgendaEditorDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Editable text = field.getText();
-                        AgendaDbHelper.getInstance(context).addAgendaItem(mContact, text.toString());
+                        AgendaDbHelper dbHelper = AgendaDbHelper.getInstance(context);
+                        dbHelper.addAgendaItem(mContact, text.toString());
+                        dbHelper.incrementSeen(mContact.getPhoneNumber());
                     }
                 });
         return builder.create();
