@@ -20,11 +20,22 @@ import me.everything.jerry.utils.ContactsUtils;
  */
 public class AgendaEditorDialog extends DialogFragment {
 
+    private static final String KEY_SHARED_TEXT = "shared_text";
     private ContactsUtils.Contact mContact;
+    private String mSharedText;
 
     public static DialogFragment newInstance(ContactsUtils.Contact contact) {
         Bundle args = new Bundle(1);
         args.putParcelable(ContactsUtils.CONTACT_KEY, contact);
+        DialogFragment fragment = new AgendaEditorDialog();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static DialogFragment newInstance(ContactsUtils.Contact contact, String sharedText) {
+        Bundle args = new Bundle(2);
+        args.putParcelable(ContactsUtils.CONTACT_KEY, contact);
+        args.putString(KEY_SHARED_TEXT, sharedText);
         DialogFragment fragment = new AgendaEditorDialog();
         fragment.setArguments(args);
         return fragment;
@@ -38,6 +49,7 @@ public class AgendaEditorDialog extends DialogFragment {
             return;
         }
         mContact = args.getParcelable(ContactsUtils.CONTACT_KEY);
+        mSharedText = args.getString(KEY_SHARED_TEXT);
     }
 
     @Override
@@ -46,6 +58,9 @@ public class AgendaEditorDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View content = LayoutInflater.from(context).inflate(R.layout.agenda_dialog_content_view, null);
         final EditText field = (EditText) content.findViewById(R.id.agenda_field);
+        if (mSharedText != null) {
+            field.setText(mSharedText);
+        }
         builder
                 .setTitle(mContact.getName())
                 .setView(content)
@@ -59,4 +74,6 @@ public class AgendaEditorDialog extends DialogFragment {
                 });
         return builder.create();
     }
+
+
 }

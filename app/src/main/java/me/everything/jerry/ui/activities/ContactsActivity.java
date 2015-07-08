@@ -3,6 +3,7 @@ package me.everything.jerry.ui.activities;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -34,6 +35,7 @@ public class ContactsActivity extends Activity {
 
     private ListView mList;
     private Adapter mAdapter;
+    private String mSharedText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +49,21 @@ public class ContactsActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ContactsUtils.Contact contact = (ContactsUtils.Contact) mAdapter.getItem(position);
-                DialogFragment fragment = AgendaEditorDialog.newInstance(contact);
+                DialogFragment fragment;
+                if (mSharedText != null) {
+                    fragment = AgendaEditorDialog.newInstance(contact, mSharedText);
+                } else {
+                    fragment = AgendaEditorDialog.newInstance(contact);
+                }
                 fragment.show(getFragmentManager(), null);
             }
         });
         AgendaDbHelper.getInstance(this).printAllDb();
+        Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            return;
+        }
+        mSharedText = extras.getString(Intent.EXTRA_TEXT);
     }
 
     private static class Holder {

@@ -20,11 +20,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activities.ShowAgendaDuringCallActivity"
             android:exported="true"
-            android:label="@string/title_activity_show_agenda_during_call"></activity>
+            android:label="@string/title_activity_show_agenda_during_call" />
 
         <receiver
             android:name=".receivers.PhoneStateReceiver"
@@ -33,7 +38,6 @@
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".receivers.OutgoingCallReceiver"
             android:enabled="true">
@@ -41,7 +45,6 @@
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
