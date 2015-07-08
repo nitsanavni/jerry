@@ -1,6 +1,7 @@
 package me.everything.jerry.receivers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.text.Spannable;
@@ -20,6 +21,7 @@ import java.lang.ref.WeakReference;
 
 import me.everything.jerry.R;
 import me.everything.jerry.db.Agenda;
+import me.everything.jerry.ui.activities.ShowAgendaDuringCallActivity;
 import me.everything.jerry.utils.StringUtils;
 
 /**
@@ -127,7 +129,19 @@ public class JerryViewHolder {
                 mReminderClosed = !mReminderClosed;
             }
         });
+        final Agenda finalAgenda = agenda;
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ShowAgendaDuringCallActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(Agenda.KEY, finalAgenda);
+                context.startActivity(intent);
+            }
+        });
+
         icon.setClickable(clickable);
+        textView.setClickable(clickable);
 
         mViewRef = new WeakReference<>(view);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -154,10 +168,13 @@ public class JerryViewHolder {
         }
         view.setClickable(true);
         View icon = view.findViewById(R.id.icon);
-        if (icon == null) {
-            return;
+        if (icon != null) {
+            icon.setClickable(true);
         }
-        icon.setClickable(true);
+        View text = view.findViewById(R.id.jerry_button);
+        if (text != null) {
+            text.setClickable(true);
+        }
     }
 
 }
