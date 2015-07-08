@@ -35,7 +35,9 @@ public class OutgoingCallReceiver extends BroadcastReceiver {
         AgendaDbHelper dbHelper = AgendaDbHelper.getInstance(context);
         dbHelper.incrementSeen(number);
         Agenda agenda = dbHelper.getAgenda(number);
-        if (agenda == null || StringUtils.isNullOrEmpty(agenda.getAgenda())) {
+        if (agenda == null ||
+                (StringUtils.isNullOrEmpty(agenda.getAgenda()) &&
+                        StringUtils.isNullOrEmpty(agenda.getAgendaSubject()))) {
             return;
         }
         Log.d(TAG, "agenda " + agenda.getAgenda());
