@@ -20,6 +20,7 @@ import java.lang.ref.WeakReference;
 
 import me.everything.jerry.R;
 import me.everything.jerry.db.Agenda;
+import me.everything.jerry.utils.StringUtils;
 
 /**
  * Created by nitsan on 7/7/15.
@@ -84,8 +85,12 @@ public class JerryViewHolder {
         } else {
             mAgenda = agenda;
         }
-        SpannableString ss = new SpannableString(agenda.getContactName() + "\n");
-        textView.setText(ss);
+        String agendaSubject = agenda.getAgendaSubject();
+        SpannableString ss;
+        if (!StringUtils.isNullOrEmpty(agendaSubject)) {
+            ss = new SpannableString(agendaSubject + "\n");
+            textView.setText(ss);
+        }
         ss = new SpannableString(agenda.getAgenda());
         ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         textView.append(ss);

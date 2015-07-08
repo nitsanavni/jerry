@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,9 +43,11 @@ import me.everything.jerry.utils.StringUtils;
 
 public class ContactsActivity extends Activity {
 
+    private static final String TAG = ContactsActivity.class.getSimpleName();
     private ListView mList;
     private Adapter mAdapter;
     private String mSharedText;
+    private String mSharedSubject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +63,7 @@ public class ContactsActivity extends Activity {
                 ContactsUtils.Contact contact = (ContactsUtils.Contact) mAdapter.getItem(position);
                 DialogFragment fragment;
                 if (mSharedText != null) {
-                    fragment = AgendaEditorDialog.newInstance(contact, mSharedText);
+                    fragment = AgendaEditorDialog.newInstance(contact, mSharedText, mSharedSubject);
                 } else {
                     fragment = AgendaEditorDialog.newInstance(contact);
                 }
@@ -71,7 +75,11 @@ public class ContactsActivity extends Activity {
         if (extras == null) {
             return;
         }
+        for (String key : extras.keySet()) {
+            Log.d(TAG, "extra " + key + ": " + extras.get(key).toString());
+        }
         mSharedText = extras.getString(Intent.EXTRA_TEXT);
+        mSharedSubject = extras.getString(Intent.EXTRA_SUBJECT);
     }
 
     private static class Holder {

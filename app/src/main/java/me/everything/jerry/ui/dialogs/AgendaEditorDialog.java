@@ -21,8 +21,10 @@ import me.everything.jerry.utils.ContactsUtils;
 public class AgendaEditorDialog extends DialogFragment {
 
     private static final String KEY_SHARED_TEXT = "shared_text";
+    private static final String KEY_SHARED_SUBJECT = "shared_subject";
     private ContactsUtils.Contact mContact;
     private String mSharedText;
+    private String mSharedSubject;
 
     public static DialogFragment newInstance(ContactsUtils.Contact contact) {
         Bundle args = new Bundle(1);
@@ -32,10 +34,11 @@ public class AgendaEditorDialog extends DialogFragment {
         return fragment;
     }
 
-    public static DialogFragment newInstance(ContactsUtils.Contact contact, String sharedText) {
+    public static DialogFragment newInstance(ContactsUtils.Contact contact, String sharedText, String sharedSubject) {
         Bundle args = new Bundle(2);
         args.putParcelable(ContactsUtils.CONTACT_KEY, contact);
         args.putString(KEY_SHARED_TEXT, sharedText);
+        args.putString(KEY_SHARED_SUBJECT, sharedText);
         DialogFragment fragment = new AgendaEditorDialog();
         fragment.setArguments(args);
         return fragment;
@@ -50,6 +53,7 @@ public class AgendaEditorDialog extends DialogFragment {
         }
         mContact = args.getParcelable(ContactsUtils.CONTACT_KEY);
         mSharedText = args.getString(KEY_SHARED_TEXT);
+        mSharedSubject = args.getString(KEY_SHARED_SUBJECT);
     }
 
     @Override
@@ -58,8 +62,12 @@ public class AgendaEditorDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View content = LayoutInflater.from(context).inflate(R.layout.agenda_dialog_content_view, null);
         final EditText field = (EditText) content.findViewById(R.id.agenda_field);
+        final EditText subject = (EditText) content.findViewById(R.id.subject_field);
         if (mSharedText != null) {
             field.setText(mSharedText);
+        }
+        if (mSharedSubject != null) {
+            subject.setText(mSharedSubject);
         }
         builder
                 .setTitle(mContact.getName())
@@ -70,7 +78,7 @@ public class AgendaEditorDialog extends DialogFragment {
                     public void onClick(DialogInterface dialog, int which) {
                         Editable text = field.getText();
                         AgendaDbHelper dbHelper = AgendaDbHelper.getInstance(context);
-                        dbHelper.addAgendaItem(mContact, text.toString());
+                        dbHelper.addAgendaItem(mContact, text.toString(), subject.getText().toString());
                         dbHelper.incrementSeen(mContact.getPhoneNumber());
                     }
                 });

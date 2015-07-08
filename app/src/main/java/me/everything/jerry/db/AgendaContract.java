@@ -16,5 +16,6 @@ public class AgendaContract {
         public static final String COLUMN_NAME_IS_CHECKED = "isChecked";
         public static final String COLUMN_NAME_CONTACT_NUMBER = "phoneNumber";
         public static final String COLUMN_NAME_CONTACT_NUMBER_SEEN = "phoneNumberSeen";
+        public static final String COLUMN_NAME_AGENDA_SUBJECT = "agendaSubject";
     }
 }

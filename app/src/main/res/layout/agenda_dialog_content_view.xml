@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/agenda_field"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:hint="@string/agenda_field_hint" />
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/subject_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/agenda_title_hint" />
+
+    <EditText
+        android:id="@+id/agenda_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/agenda_field_hint" />
+</LinearLayout>
