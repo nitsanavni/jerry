@@ -32,6 +32,7 @@ public class JerryViewHolder {
 
     private static JerryViewHolder sInstance;
     private Agenda mAgenda;
+    private float mTranslate = 0.0f;
 
     private JerryViewHolder() {
     }
@@ -97,21 +98,29 @@ public class JerryViewHolder {
                 } else {
                     textView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 }
-                int translate = textView.getWidth() - icon.getWidth() / 2;
+                mTranslate = textView.getWidth() - icon.getWidth() / 2;
                 int width = view.getWidth();
                 icon.setTranslationX(width);
                 textView.setTranslationX(width);
                 view.setVisibility(View.VISIBLE);
-                icon.animate().translationX(translate).start();
-                textView.animate().translationX(translate).start();
+                icon.animate().translationX(mTranslate).start();
+                textView.animate().translationX(mTranslate).start();
             }
         });
         icon.setOnClickListener(new View.OnClickListener() {
+            public boolean mReminderClosed = true;
+
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick icon");
-                icon.animate().translationX(0).start();
-                textView.animate().translationX(0).start();
+                if (mReminderClosed) {
+                    icon.animate().translationX(0).start();
+                    textView.animate().translationX(0).start();
+                } else {
+                    icon.animate().translationX(mTranslate).start();
+                    textView.animate().translationX(mTranslate).start();
+                }
+                mReminderClosed = !mReminderClosed;
             }
         });
 
