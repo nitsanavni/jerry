@@ -66,20 +66,6 @@ public class JerryViewHolder {
         Log.d(TAG, "addView");
         final View view = LayoutInflater.from(context).inflate(R.layout.call_overlay_layout, null);
         view.setClickable(clickable);
-//        view.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                ViewParent parent = v.getParent();
-//                if (parent == null) {
-//                    return false;
-//                }
-//                if (parent instanceof View) {
-//                    ((View) parent).onTouchEvent(event);
-//                    return false;
-//                }
-//                return false;
-//            }
-//        });
         final TextView textView = (TextView) view.findViewById(R.id.jerry_button);
         if (agenda == null) {
             agenda = mAgenda;

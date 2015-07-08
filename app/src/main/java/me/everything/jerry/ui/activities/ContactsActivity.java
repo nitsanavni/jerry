@@ -150,11 +150,21 @@ public class ContactsActivity extends Activity {
 
             // Create initials place holder
             Agenda agenda = contact.getAgenda();
-            if (agenda != null && (!StringUtils.isNullOrEmpty(agenda.getAgenda()) || !StringUtils.isNullOrEmpty(agenda.getAgendaSubject()))) {
-                // TODO - handle agenda subject & replace "\n" with "; "
+            boolean isAgenda = agenda != null && !StringUtils.isNullOrEmpty(agenda.getAgenda());
+            boolean isTitle = agenda != null && !StringUtils.isNullOrEmpty(agenda.getAgendaSubject());
+
+
+            if (isAgenda || isTitle) {
                 holder.badge.setVisibility(View.VISIBLE);
-                CharSequence ellipsize = TextUtils.ellipsize(agenda.getAgenda(), holder.name.getPaint(), 1700, TextUtils.TruncateAt.END);
-                SpannableString ss = new SpannableString("\n" + ellipsize);
+                StringBuilder sb = new StringBuilder();
+                if (isTitle) {
+                    sb.append(agenda.getAgendaSubject() + " ");
+                }
+                if (isAgenda) {
+                    sb.append(agenda.getAgenda());
+                }
+                String subText = sb.toString().replace("\n", "; ");
+                SpannableString ss = new SpannableString("\n" + subText);
                 TextAppearanceSpan span = new TextAppearanceSpan(context, R.style.remonder_text);
                 ss.setSpan(span, 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 holder.name.append(ss);
