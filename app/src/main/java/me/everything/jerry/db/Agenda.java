@@ -7,11 +7,14 @@ public class Agenda {
     private String contactName;
     private String contactNumber;
     private String agenda;
+    private int seen;
 
-    public Agenda(String contactName, String contactNumber, String agenda) {
+
+    public Agenda(String contactName, String contactNumber, String agenda, int seen) {
         this.agenda = agenda;
         this.contactName = contactName;
         this.contactNumber = contactNumber;
+        this.seen = seen;
     }
 
     public String getContactName() {
@@ -24,5 +27,9 @@ public class Agenda {
 
     public String getAgenda() {
         return agenda;
+    }
+
+    public int getSeen() {
+        return seen;
     }
 }

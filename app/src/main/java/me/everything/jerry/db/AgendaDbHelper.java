@@ -133,7 +133,8 @@ public class AgendaDbHelper extends SQLiteOpenHelper {
 
             String name = cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NAME));
             String agendaText = cursor.getString(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_AGENDA));
-            Agenda agenda = new Agenda(name, number, agendaText);
+            int seen = cursor.getInt(cursor.getColumnIndex(AgendaContract.AgendaEntry.COLUMN_NAME_CONTACT_NUMBER_SEEN));
+            Agenda agenda = new Agenda(name, number, agendaText, seen);
             Log.d(TAG, "agenda: " + agenda.getAgenda() + ", name: " + agenda.getContactName());
             return agenda;
         } catch (Exception e) {

@@ -19,6 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import me.everything.jerry.db.Agenda;
+import me.everything.jerry.db.AgendaDbHelper;
+
 
 /**
  * Created by markkoltnuk on 3/27/15.
@@ -42,6 +45,8 @@ public class ContactsUtils {
                 return Collections.emptyList();
             }
 
+            AgendaDbHelper dbHelper = AgendaDbHelper.getInstance(context);
+
             Log.w(TAG, "readContacts() found " + count + " contacts, syncing...");
             List<Contact> contacts = new ArrayList<>(count);
             contactsCursor.moveToFirst();
@@ -57,7 +62,9 @@ public class ContactsUtils {
                     continue;
                 }
 
-                contacts.add(new Contact(id, name, phoneNumber));
+                // OMG what a hack!!
+                Agenda agenda = dbHelper.getAgenda(phoneNumber);
+                contacts.add(new Contact(id, name, phoneNumber, agenda));
                 contactsCursor.moveToNext();
             }
             return contacts;
@@ -141,7 +148,7 @@ public class ContactsUtils {
         }
         try {
             cursor = context.getContentResolver()
-                    .query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null, null);
+                    .query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
             if (cursor == null || !cursor.moveToFirst()) {
                 Log.w(TAG, "readContacts() no contacts found!");
                 return null;
@@ -153,7 +160,8 @@ public class ContactsUtils {
                 if (!StringUtils.isNullOrEmpty(phoneNumber) && phoneNumber.equals(number)) {
                     String id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID));
                     String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                    return new Contact(id, name, phoneNumber);
+                    // TODO - this null will cause problems at some point
+                    return new Contact(id, name, phoneNumber, null);
                 }
             } while (cursor.moveToNext());
         } catch (Exception e) {
@@ -171,10 +179,14 @@ public class ContactsUtils {
         private String name;
         private String phoneNumber;
 
-        public Contact(String id, String name, String phoneNumber) {
+
+        private Agenda agenda;
+
+        public Contact(String id, String name, String phoneNumber, Agenda agenda) {
             this.id = id;
             this.name = name;
             this.phoneNumber = phoneNumber;
+            this.agenda = agenda;
         }
 
         public Contact(Parcel in) {
@@ -194,6 +206,10 @@ public class ContactsUtils {
                 return new Contact[size];
             }
         };
+
+        public Agenda getAgenda() {
+            return agenda;
+        }
 
         public String getId() {
             return id;

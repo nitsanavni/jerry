@@ -9,6 +9,9 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +23,19 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.everything.jerry.R;
+import me.everything.jerry.db.Agenda;
 import me.everything.jerry.db.AgendaDbHelper;
 import me.everything.jerry.ui.dialogs.AgendaEditorDialog;
 import me.everything.jerry.utils.ContactsUtils;
 import me.everything.jerry.utils.InitialsFinder;
+import me.everything.jerry.utils.StringUtils;
 
 
 public class ContactsActivity extends Activity {
@@ -69,6 +76,7 @@ public class ContactsActivity extends Activity {
     private static class Holder {
         TextView name;
         CircleImageView image;
+        View badge;
     }
 
     private static class Adapter extends BaseAdapter {
@@ -124,6 +132,7 @@ public class ContactsActivity extends Activity {
                 holder = new Holder();
                 holder.name = (TextView) convertView.findViewById(R.id.name);
                 holder.image = (CircleImageView) convertView.findViewById(R.id.image);
+                holder.badge = convertView.findViewById(R.id.badge);
                 convertView.setTag(holder);
             } else {
                 holder = (Holder) convertView.getTag();
@@ -131,7 +140,15 @@ public class ContactsActivity extends Activity {
             holder.name.setText(name);
 
             // Create initials place holder
-
+            Agenda agenda = contact.getAgenda();
+            if (agenda != null && !StringUtils.isNullOrEmpty(agenda.getAgenda())) {
+                holder.badge.setVisibility(View.VISIBLE);
+                SpannableString ss = new SpannableString("\n" + agenda.getAgenda());
+                ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                holder.name.append(ss);
+            } else {
+                holder.badge.setVisibility(View.GONE);
+            }
             // Get contact image URI
             Uri uri = ContactsUtils.getPhotoUriFromID(context, contact.getId());
 
@@ -180,6 +197,28 @@ public class ContactsActivity extends Activity {
             if (null == activity) {
                 return;
             }
+            Collections.sort(contacts, new Comparator<ContactsUtils.Contact>() {
+                @Override
+                public int compare(ContactsUtils.Contact lhs, ContactsUtils.Contact rhs) {
+                    Agenda lagenda = lhs.getAgenda();
+                    Agenda ragenda = rhs.getAgenda();
+                    if (null == lagenda && ragenda == null) {
+                        return 0;
+                    }
+                    if (null == lagenda) {
+                        return 1;
+                    }
+                    if (null == ragenda) {
+                        return -1;
+                    }
+                    int lseen = lagenda.getSeen();
+                    int rseen = ragenda.getSeen();
+                    if (lseen == rseen) {
+                        return 0;
+                    }
+                    return lseen > rseen ? -1 : 1;
+                }
+            });
             activity.mAdapter.put(contacts);
         }
     }
