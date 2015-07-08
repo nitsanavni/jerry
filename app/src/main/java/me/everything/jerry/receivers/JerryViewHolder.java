@@ -28,8 +28,7 @@ import me.everything.jerry.utils.StringUtils;
 public class JerryViewHolder {
 
     private static final String TAG = JerryViewHolder.class.getSimpleName();
-    private WeakReference<View> mNonClickableViewRef;
-    private WeakReference<View> mClickableViewRef;
+    private WeakReference<View> mViewRef;
 
     private static JerryViewHolder sInstance;
     private Agenda mAgenda;
@@ -61,24 +60,24 @@ public class JerryViewHolder {
         return params;
     }
 
-    public void addClickableView(final Context context, Agenda agenda) {
-        Log.d(TAG, "addClickableView");
-        removeView(context);
+    public void addView(final Context context, Agenda agenda, boolean clickable) {
+        Log.d(TAG, "addView");
         final View view = LayoutInflater.from(context).inflate(R.layout.call_overlay_layout, null);
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ViewParent parent = v.getParent();
-                if (parent == null) {
-                    return false;
-                }
-                if (parent instanceof View) {
-                    ((View) parent).onTouchEvent(event);
-                    return false;
-                }
-                return false;
-            }
-        });
+        view.setClickable(clickable);
+//        view.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                ViewParent parent = v.getParent();
+//                if (parent == null) {
+//                    return false;
+//                }
+//                if (parent instanceof View) {
+//                    ((View) parent).onTouchEvent(event);
+//                    return false;
+//                }
+//                return false;
+//            }
+//        });
         final TextView textView = (TextView) view.findViewById(R.id.jerry_button);
         if (agenda == null) {
             agenda = mAgenda;
@@ -128,8 +127,9 @@ public class JerryViewHolder {
                 mReminderClosed = !mReminderClosed;
             }
         });
+        icon.setClickable(clickable);
 
-        mClickableViewRef = new WeakReference<>(view);
+        mViewRef = new WeakReference<>(view);
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams params = getParams();
         wm.addView(view, params);
@@ -138,55 +138,26 @@ public class JerryViewHolder {
     public void removeView(Context context) {
         Log.d(TAG, "removeView");
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        if (null != mClickableViewRef && mClickableViewRef.get() != null) {
-            wm.removeView(mClickableViewRef.get());
-            mClickableViewRef = null;
+        if (null != mViewRef && mViewRef.get() != null) {
+            wm.removeView(mViewRef.get());
+            mViewRef = null;
         }
-        if (null != mNonClickableViewRef && mNonClickableViewRef.get() != null) {
-            wm.removeView(mNonClickableViewRef.get());
-            mNonClickableViewRef = null;
-        }
-    }
-
-    public void addNonClickableView(final Context context, Agenda agenda) {
-        Log.d(TAG, "addNonClickableView; number: " + agenda.getContactNumber());
-        mAgenda = agenda;
-        removeView(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.agenda_overlay_layout, null);
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                ViewParent parent = v.getParent();
-                if (parent == null) {
-                    return false;
-                }
-                if (parent instanceof View) {
-                    ((View) parent).onTouchEvent(event);
-                    return false;
-                }
-                return false;
-            }
-        });
-        TextView agendaView = (TextView) view.findViewById(R.id.agenda_text);
-        agendaView.setText(agenda.getContactName() + "\n" + agenda.getAgenda());
-        mNonClickableViewRef = new WeakReference<>(view);
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams params = getParams();
-        wm.addView(view, params);
     }
 
     public void offhook() {
-        if (mClickableViewRef != null && mClickableViewRef.get() != null) {
+        if (mViewRef == null) {
             return;
         }
-        if (mNonClickableViewRef == null) {
-            return;
-        }
-        View view = mNonClickableViewRef.get();
+        View view = mViewRef.get();
         if (view == null) {
             return;
         }
-        addClickableView(view.getContext(), null);
+        view.setClickable(true);
+        View icon = view.findViewById(R.id.icon);
+        if (icon == null) {
+            return;
+        }
+        icon.setClickable(true);
     }
 
 }

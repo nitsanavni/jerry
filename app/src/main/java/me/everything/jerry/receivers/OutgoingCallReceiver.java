@@ -39,6 +39,6 @@ public class OutgoingCallReceiver extends BroadcastReceiver {
             return;
         }
         Log.d(TAG, "agenda " + agenda.getAgenda());
-        JerryViewHolder.getInstance().addClickableView(context, agenda);
+        JerryViewHolder.getInstance().addView(context, agenda, true);
     }
 }

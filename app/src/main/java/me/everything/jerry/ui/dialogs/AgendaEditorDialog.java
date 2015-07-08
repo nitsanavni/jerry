@@ -38,7 +38,7 @@ public class AgendaEditorDialog extends DialogFragment {
         Bundle args = new Bundle(2);
         args.putParcelable(ContactsUtils.CONTACT_KEY, contact);
         args.putString(KEY_SHARED_TEXT, sharedText);
-        args.putString(KEY_SHARED_SUBJECT, sharedText);
+        args.putString(KEY_SHARED_SUBJECT, sharedSubject);
         DialogFragment fragment = new AgendaEditorDialog();
         fragment.setArguments(args);
         return fragment;

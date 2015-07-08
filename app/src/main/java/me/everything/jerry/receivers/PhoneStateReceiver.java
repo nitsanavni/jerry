@@ -54,7 +54,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 // no agenda for this caller
                 return;
             }
-            JerryViewHolder.getInstance().addNonClickableView(context, agenda);
+            JerryViewHolder.getInstance().addView(context, agenda, false);
             return;
         }
 
