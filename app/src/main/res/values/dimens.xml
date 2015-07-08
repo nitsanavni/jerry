@@ -13,4 +13,6 @@
     <dimen name="reminder_icon_size">48dp</dimen>
     <dimen name="reminder_text_margin_left">-32dp</dimen>
     <dimen name="badge_size">22dp</dimen>
+    <dimen name="neg_badge_size">-22dp</dimen>
+    <dimen name="badge_bottom_margin">-38dp</dimen>
 </resources>

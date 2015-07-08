@@ -16,8 +16,9 @@
         android:id="@+id/badge"
         android:layout_width="@dimen/badge_size"
         android:layout_height="@dimen/badge_size"
-        android:layout_alignBottom="@+id/image"
         android:layout_alignRight="@+id/image"
+        android:layout_below="@+id/image"
+        android:translationY="@dimen/neg_badge_size"
         android:src="@drawable/reminder_icon"
         android:visibility="gone" />
 
