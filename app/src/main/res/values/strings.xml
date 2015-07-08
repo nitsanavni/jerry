@@ -7,12 +7,13 @@
     <string name="action_settings">Settings</string>
     <string name="hello_jerry">hello Jerry!</string>
     <string name="ok">OK</string>
-    <string name="cancel">Camcel</string>
+    <string name="cancel">CANCEL</string>
     <string name="title_activity_show_agenda_during_call">ShowAgendaDuringCallActivity</string>
     <string name="loading">Loading...</string>
-    <string name="agenda_field_hint">Type your note</string>
+    <string name="agenda_field_hint">Reminder about this contact</string>
     <string name="send_to_jerry">Send to Jerry</string>
-    <string name="agenda_title_hint">Note title</string>
+    <string name="agenda_title_hint">Reminder Title</string>
+    <string name="save">SAVE</string>
 
 
 </resources>

@@ -17,4 +17,6 @@
     <dimen name="badge_bottom_margin">-38dp</dimen>
     <dimen name="reminder_icon_margin_left">16dp</dimen>
     <dimen name="reminder_text_margin_right">16dp</dimen>
+    <dimen name="dialog_button_margin">16dp</dimen>
+    <dimen name="dialog_fields_margin">16dp</dimen>
 </resources>

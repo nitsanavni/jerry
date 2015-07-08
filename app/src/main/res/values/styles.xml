@@ -16,4 +16,13 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="dialog_edittext" parent="@android:style/Widget.EditText">
+        <item name="android:background">@drawable/dialog_field_bg</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="dialog_button" parent="@android:style/Widget.TextView">
+
+    </style>
+
 </resources>

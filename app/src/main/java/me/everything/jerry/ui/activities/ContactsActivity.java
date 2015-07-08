@@ -150,7 +150,7 @@ public class ContactsActivity extends Activity {
 
             // Create initials place holder
             Agenda agenda = contact.getAgenda();
-            if (agenda != null && !StringUtils.isNullOrEmpty(agenda.getAgenda())) {
+            if (agenda != null && (!StringUtils.isNullOrEmpty(agenda.getAgenda()) || !StringUtils.isNullOrEmpty(agenda.getAgendaSubject()))) {
                 // TODO - handle agenda subject & replace "\n" with "; "
                 holder.badge.setVisibility(View.VISIBLE);
                 CharSequence ellipsize = TextUtils.ellipsize(agenda.getAgenda(), holder.name.getPaint(), 1700, TextUtils.TruncateAt.END);

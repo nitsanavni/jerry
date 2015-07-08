@@ -10,7 +10,8 @@
         android:layout_width="@dimen/contact_image_size"
         android:layout_height="@dimen/contact_image_size"
         android:layout_centerVertical="true"
-        android:layout_margin="@dimen/contact_image_margin" />
+        android:layout_margin="@dimen/contact_image_margin"
+        android:src="@drawable/reminder_icon" />
 
     <ImageView
         android:id="@+id/badge"
@@ -18,8 +19,8 @@
         android:layout_height="@dimen/badge_size"
         android:layout_alignRight="@+id/image"
         android:layout_below="@+id/image"
-        android:translationY="@dimen/neg_badge_size"
         android:src="@drawable/reminder_icon"
+        android:translationY="@dimen/neg_badge_size"
         android:visibility="gone" />
 
     <TextView
@@ -29,6 +30,7 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/image"
         android:gravity="left|center_vertical"
+        android:text="@string/app_name"
         android:textColor="@android:color/black"
         android:textSize="18sp" />
 

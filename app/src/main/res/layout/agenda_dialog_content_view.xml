@@ -1,18 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include
+        android:id="@+id/contact_layout"
+        layout="@layout/contact_layout" />
+
     <EditText
         android:id="@+id/subject_field"
+        style="@style/dialog_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/contact_layout"
+        android:layout_margin="@dimen/dialog_fields_margin"
         android:hint="@string/agenda_title_hint" />
 
     <EditText
         android:id="@+id/agenda_field"
+        style="@style/dialog_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/subject_field"
+        android:layout_margin="@dimen/dialog_fields_margin"
         android:hint="@string/agenda_field_hint" />
-</LinearLayout>
+
+    <TextView
+        android:id="@+id/cancel"
+        style="@style/dialog_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/agenda_field"
+        android:layout_margin="@dimen/dialog_button_margin"
+        android:layout_toLeftOf="@+id/save"
+        android:text="@string/cancel" />
+
+    <TextView
+        android:id="@+id/save"
+        style="@style/dialog_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/agenda_field"
+        android:layout_margin="@dimen/dialog_button_margin"
+        android:text="@string/save"
+        android:textColor="@color/reminder_color" />
+
+</RelativeLayout>

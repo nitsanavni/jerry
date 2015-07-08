@@ -178,8 +178,6 @@ public class ContactsUtils {
         private String id;
         private String name;
         private String phoneNumber;
-
-
         private Agenda agenda;
 
         public Contact(String id, String name, String phoneNumber, Agenda agenda) {
@@ -195,6 +193,7 @@ public class ContactsUtils {
             id = data[0];
             name = data[1];
             phoneNumber = data[2];
+            agenda = in.readParcelable(Agenda.class.getClassLoader());
         }
 
         public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -231,6 +230,7 @@ public class ContactsUtils {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             dest.writeStringArray(new String[]{id, name, phoneNumber});
+            dest.writeParcelable(agenda, flags);
         }
 
         private static final int NO_COLOR = 0;
