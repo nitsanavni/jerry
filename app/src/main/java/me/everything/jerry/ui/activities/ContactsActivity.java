@@ -254,6 +254,7 @@ public class ContactsActivity extends Activity {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
+                    activity.findViewById(R.id.list).animate().alpha(1.0f).setDuration(1).start();
                     activity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                 }
             }).start();
