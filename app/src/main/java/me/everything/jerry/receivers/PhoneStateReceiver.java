@@ -8,6 +8,7 @@ import android.util.Log;
 
 import me.everything.jerry.db.Agenda;
 import me.everything.jerry.db.AgendaDbHelper;
+import me.everything.jerry.services.JerryService;
 import me.everything.jerry.utils.PhoneNumberUtils;
 import me.everything.jerry.utils.StringUtils;
 
@@ -32,7 +33,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
         if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
             Log.d(TAG, "idle");
-            JerryViewHolder.getInstance().removeView(context);
+            JerryService.removeView(context);
             return;
         }
 
@@ -50,17 +51,17 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             AgendaDbHelper dbHelper = AgendaDbHelper.getInstance(context);
             dbHelper.incrementSeen(number);
             Agenda agenda = dbHelper.getAgenda(number);
-            if (agenda == null || StringUtils.isNullOrEmpty(agenda.getAgenda())) {
+            if (agenda == null || (StringUtils.isNullOrEmpty(agenda.getAgenda()) && StringUtils.isNullOrEmpty(agenda.getAgendaSubject()))) {
                 // no agenda for this caller
                 return;
             }
-            JerryViewHolder.getInstance().addView(context, agenda, false);
+            JerryService.addView(context, agenda);
             return;
         }
 
         if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
             Log.d(TAG, "off hook (either outgoing call or answered incoming call)");
-            JerryViewHolder.getInstance().offhook();
+            //JerryViewHolder.getInstance().offhook();
         }
 
     }

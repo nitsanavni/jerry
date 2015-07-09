@@ -1,5 +1,6 @@
 package me.everything.jerry.receivers;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
@@ -10,9 +11,7 @@ import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewParent;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -30,26 +29,21 @@ import me.everything.jerry.utils.StringUtils;
 public class JerryViewHolder {
 
     private static final String TAG = JerryViewHolder.class.getSimpleName();
-    private WeakReference<View> mViewRef;
+    private WeakReference<View> mViewRef = null;
+    private Service mService = null;
 
-    private static JerryViewHolder sInstance;
     private Agenda mAgenda;
     private float mTranslate = 0.0f;
 
-    private JerryViewHolder() {
-    }
-
-    public static JerryViewHolder getInstance() {
-        if (sInstance == null) {
-            sInstance = new JerryViewHolder();
-        }
-        return sInstance;
+    public JerryViewHolder(Service service) {
+        mService = service;
     }
 
     private WindowManager.LayoutParams getParams() {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
+                // TODO - on Lollipop we might need TYPE_SYSTEM_ERROR or maybe to delay
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
@@ -62,9 +56,13 @@ public class JerryViewHolder {
         return params;
     }
 
-    public void addView(final Context context, Agenda agenda, boolean clickable) {
+    public void addView(Agenda agenda, boolean clickable) {
         Log.d(TAG, "addView");
-        final View view = LayoutInflater.from(context).inflate(R.layout.call_overlay_layout, null);
+        if (mViewRef != null && mViewRef.get() != null) {
+            Log.d(TAG, "addView - not adding view, view already exists");
+            return;
+        }
+        final View view = LayoutInflater.from(mService).inflate(R.layout.call_overlay_layout, null);
         view.setClickable(clickable);
         final TextView textView = (TextView) view.findViewById(R.id.jerry_button);
         if (agenda == null) {
@@ -79,9 +77,11 @@ public class JerryViewHolder {
             textView.setText(ss);
         }
         ss = new SpannableString(agenda.getAgenda());
-        ss.setSpan(new TextAppearanceSpan(context, R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ss.setSpan(new TextAppearanceSpan(mService.getApplicationContext(), R.style.remonder_text), 0, ss.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         textView.append(ss);
         final View icon = view.findViewById(R.id.icon);
+        view.setVisibility(View.VISIBLE);
         textView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -119,11 +119,11 @@ public class JerryViewHolder {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, ShowAgendaDuringCallActivity.class);
+                Intent intent = new Intent(mService, ShowAgendaDuringCallActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(Agenda.KEY, finalAgenda);
-                context.startActivity(intent);
-                removeView(context);
+                mService.startActivity(intent);
+                removeView();
             }
         });
 
@@ -131,17 +131,19 @@ public class JerryViewHolder {
         textView.setClickable(clickable);
 
         mViewRef = new WeakReference<>(view);
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) mService.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         WindowManager.LayoutParams params = getParams();
         wm.addView(view, params);
     }
 
-    public void removeView(Context context) {
+    public void removeView() {
         Log.d(TAG, "removeView");
-        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         if (null != mViewRef && mViewRef.get() != null) {
-            wm.removeView(mViewRef.get());
+            View view = mViewRef.get();
+            WindowManager wm = (WindowManager) mService.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+            wm.removeViewImmediate(view);
             mViewRef = null;
+            mService.stopSelf();
         }
     }
 
@@ -164,4 +166,9 @@ public class JerryViewHolder {
         }
     }
 
+    public void destroy() {
+        mService = null;
+    }
+
 }
+

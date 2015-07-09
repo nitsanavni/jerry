@@ -7,6 +7,7 @@ import android.util.Log;
 
 import me.everything.jerry.db.Agenda;
 import me.everything.jerry.db.AgendaDbHelper;
+import me.everything.jerry.services.JerryService;
 import me.everything.jerry.utils.PhoneNumberUtils;
 import me.everything.jerry.utils.StringUtils;
 
@@ -41,6 +42,6 @@ public class OutgoingCallReceiver extends BroadcastReceiver {
             return;
         }
         Log.d(TAG, "agenda " + agenda.getAgenda());
-        JerryViewHolder.getInstance().addView(context, agenda, true);
+        JerryService.addView(context, agenda);
     }
 }
