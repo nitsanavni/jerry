@@ -1,5 +1,7 @@
 package me.everything.jerry.ui.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
@@ -7,12 +9,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,6 +80,11 @@ public class ContactsActivity extends Activity {
         }
         mSharedText = extras.getString(Intent.EXTRA_TEXT);
         mSharedSubject = extras.getString(Intent.EXTRA_SUBJECT);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private static class Holder {
@@ -193,6 +198,7 @@ public class ContactsActivity extends Activity {
         public void put(List<ContactsUtils.Contact> contacts) {
             mContacts = contacts;
             notifyDataSetChanged();
+
         }
     }
 
@@ -242,6 +248,13 @@ public class ContactsActivity extends Activity {
                 }
             });
             activity.mAdapter.put(contacts);
+            final View splash = activity.findViewById(R.id.splash_image);
+            splash.animate().alpha(0.0f).setDuration(800).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    splash.setVisibility(View.GONE);
+                }
+            }).start();
         }
     }
 

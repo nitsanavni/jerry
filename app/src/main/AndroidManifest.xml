@@ -9,12 +9,13 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/reminder_icon"
+        android:icon="@mipmap/app_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.activities.ContactsActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,9 +29,9 @@
         </activity>
         <activity
             android:name=".ui.activities.ShowAgendaDuringCallActivity"
-            android:theme="@android:style/Theme.Dialog"
             android:exported="true"
-            android:label="@string/title_activity_show_agenda_during_call" />
+            android:label="@string/title_activity_show_agenda_during_call"
+            android:theme="@android:style/Theme.Dialog" />
 
         <receiver
             android:name=".receivers.PhoneStateReceiver"
