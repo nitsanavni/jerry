@@ -7,6 +7,8 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -163,7 +165,7 @@ public class ContactsActivity extends Activity {
                 holder.badge.setVisibility(View.VISIBLE);
                 StringBuilder sb = new StringBuilder();
                 if (isTitle) {
-                    sb.append(agenda.getAgendaSubject() + " ");
+                    sb.append(agenda.getAgendaSubject()).append(" ");
                 }
                 if (isAgenda) {
                     sb.append(agenda.getAgenda());
@@ -221,7 +223,7 @@ public class ContactsActivity extends Activity {
 
         @Override
         protected void onPostExecute(List<ContactsUtils.Contact> contacts) {
-            ContactsActivity activity = mActivityRef.get();
+            final ContactsActivity activity = mActivityRef.get();
             if (null == activity) {
                 return;
             }
@@ -248,11 +250,11 @@ public class ContactsActivity extends Activity {
                 }
             });
             activity.mAdapter.put(contacts);
-            final View splash = activity.findViewById(R.id.splash_image);
-            splash.animate().alpha(0.0f).setDuration(800).setListener(new AnimatorListenerAdapter() {
+            activity.findViewById(R.id.list).animate().alpha(1.0f).setDuration(800).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    splash.setVisibility(View.GONE);
+                    super.onAnimationEnd(animation);
+                    activity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
                 }
             }).start();
         }
