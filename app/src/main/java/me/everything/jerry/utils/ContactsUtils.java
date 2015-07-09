@@ -38,7 +38,11 @@ public class ContactsUtils {
         context = context.getApplicationContext();
         Cursor contactsCursor = null;
         try {
-            contactsCursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+            contactsCursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC");
             int count = contactsCursor.getCount();
             if (count == 0) {
                 Log.w(TAG, "readContacts() no contacts found!");
